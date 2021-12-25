@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping(value = "/users")
@@ -31,8 +34,16 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<Page<UserModel>> getAllUsers(SpecificationTemplate.UserSpec spec,
-            @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable) {
-        Page<UserModel> userModelPage = userService.findAll(pageable,spec);
+                                                       @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<UserModel> userModelPage = userService.findAll(pageable, spec);
+        // HATEOAS Impl.
+        if (!userModelPage.isEmpty()) {
+            for (UserModel user :
+                    userModelPage.toList()) {
+                user.add(linkTo(methodOn(UserController.class).getOneUser(user.getUserId())).withSelfRel());
+                // Link : Controller+Controller Method+ID of the Method+Relation for the own resource.
+            }
+        }
         return ResponseEntity.ok().body(userModelPage);
     }
 
