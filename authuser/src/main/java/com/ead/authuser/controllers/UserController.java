@@ -7,8 +7,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -51,7 +53,9 @@ public class UserController {
     }
 
     @PutMapping(value = "/{userId}")
-    public ResponseEntity<Object> updateUser(@PathVariable UUID userId, @RequestBody @JsonView(UserDto.UserView.UserPut.class) UserDto userDto) {
+    public ResponseEntity<Object> updateUser(@PathVariable UUID userId,
+                                             @RequestBody @Validated(UserDto.UserView.UserPut.class)
+                                             @JsonView(UserDto.UserView.UserPut.class) UserDto userDto) {
         Optional<UserModel> userModelOptional = userService.findById(userId);
         if (!userModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
@@ -68,7 +72,10 @@ public class UserController {
 
 
     @PutMapping(value = "/{userId}/password")
-    public ResponseEntity<Object> updatePassword(@PathVariable UUID userId, @RequestBody @JsonView(UserDto.UserView.PasswordPut.class) UserDto userDto) {
+    public ResponseEntity<Object> updatePassword(@PathVariable UUID userId,
+                                                 @RequestBody
+                                                 @Validated(UserDto.UserView.PasswordPut.class)
+                                                 @JsonView(UserDto.UserView.PasswordPut.class) UserDto userDto) {
         Optional<UserModel> userModelOptional = userService.findById(userId);
         if (!userModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
@@ -86,16 +93,19 @@ public class UserController {
 
 
     @PutMapping(value = "/{userId}/image")
-    public ResponseEntity<Object> updateImage(@PathVariable UUID userId, @RequestBody @JsonView(UserDto.UserView.ImagePut.class) UserDto userDto) {
+    public ResponseEntity<Object> updateImage(@PathVariable UUID userId,
+                                              @RequestBody
+                                              @Validated(UserDto.UserView.ImagePut.class)
+                                              @JsonView(UserDto.UserView.ImagePut.class) UserDto userDto) {
         Optional<UserModel> userModelOptional = userService.findById(userId);
         if (!userModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
-            var userModel = userModelOptional.get();
-            userModel.setImageUrl(userDto.getImageUrl());
-            userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
-            userService.save(userModel);
-            return ResponseEntity.ok().body(userModel);
-        }
+        var userModel = userModelOptional.get();
+        userModel.setImageUrl(userDto.getImageUrl());
+        userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+        userService.save(userModel);
+        return ResponseEntity.ok().body(userModel);
     }
+}
 
