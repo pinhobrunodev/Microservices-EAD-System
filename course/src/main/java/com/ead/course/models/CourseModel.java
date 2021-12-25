@@ -8,11 +8,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -57,11 +58,18 @@ public class CourseModel implements Serializable {
         SUBSELECT -> 1 Query to bring the Course Data  and 1 Query to  load Each course Module ( But is a "Clean Way") Use the predefined FetchType.
         Without FetchMode -> JPA DEFAULT = JOIN ( Using EAGER ) But ... if specifying the FetchType ... will be the specified.
 
+
+        fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true ( Bad performance ... delete the course and delete each lesson... JPA does...)
+        @OnDelete(action = OnDeleteAction.CASCADE) ( delete the course and the DATABASE will delete each module relation with a clever delete... but is still bad )
+
+
+
      */
 
     // Specify how the access of serialization will be... /GET All Courses => Ignore the Modules
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "course",fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
+
     private Set<ModuleModel> modules;
 }
