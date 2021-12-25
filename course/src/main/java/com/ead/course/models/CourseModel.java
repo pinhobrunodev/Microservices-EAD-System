@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -45,8 +47,21 @@ public class CourseModel implements Serializable {
     @Column(nullable = false)
     private UUID userInstructor;
 
+      /*
+
+        EAGER : Load data ... ManyToOne Default (Eager)
+        LAZY  : Only load data when use the data.  ( Recommended) .. OneToMany Default ( Lazy )
+
+        SELECT -> 1 Query to load Course and another Query to load EACH Course Module ( BAD WAY =[ ) .... Use the predefined FetchType.
+        JOIN ->  1 Query to load all Course and Modules data. ( Large SQL in one transaction )... Ignore Lazy... All Query's will be EAGER.
+        SUBSELECT -> 1 Query to bring the Course Data  and 1 Query to  load Each course Module ( But is a "Clean Way") Use the predefined FetchType.
+        Without FetchMode -> JPA DEFAULT = JOIN ( Using EAGER ) But ... if specifying the FetchType ... will be the specified.
+
+     */
+
     // Specify how the access of serialization will be... /GET All Courses => Ignore the Modules
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @OneToMany(mappedBy = "course")
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     private Set<ModuleModel> modules;
 }
