@@ -3,8 +3,6 @@ package com.ead.course.controllers;
 import com.ead.course.dtos.CourseDto;
 import com.ead.course.models.CourseModel;
 import com.ead.course.services.impl.CourseServiceImpl;
-import org.apache.coyote.Response;
-import org.openjsse.net.ssl.OpenJSSE;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

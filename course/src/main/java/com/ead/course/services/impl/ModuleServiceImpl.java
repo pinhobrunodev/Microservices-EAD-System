@@ -38,7 +38,7 @@ public class ModuleServiceImpl implements ModuleService {
 
     @Override
     public Optional<ModuleModel> findById(UUID moduleId) {
-        return Optional.empty();
+        return moduleRepository.findById(moduleId);
     }
 
     @Override
@@ -50,4 +50,6 @@ public class ModuleServiceImpl implements ModuleService {
     public List<ModuleModel> findAllByCourse(UUID courseId) {
         return moduleRepository.findAllModulesIntoCourse(courseId);
     }
+
+
 }
