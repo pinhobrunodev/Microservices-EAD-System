@@ -14,5 +14,6 @@ public interface LessonService {
 
     Optional<LessonModel> findLessonIntoModule(UUID moduleId, UUID lessonId);
 
+
     List<LessonModel> findAllByModule(UUID moduleId);
 }

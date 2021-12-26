@@ -28,12 +28,14 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public Optional<LessonModel> findLessonIntoModule(UUID moduleId, UUID lessonId) {
-        return lessonRepository.findLessonIntoModule(moduleId,lessonId);
+        return lessonRepository.findLessonIntoModule(moduleId, lessonId);
     }
+
 
     @Override
     public List<LessonModel> findAllByModule(UUID moduleId) {
         return lessonRepository.findAllLessonsIntoModule(moduleId);
     }
+
 
 }
