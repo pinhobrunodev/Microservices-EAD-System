@@ -42,7 +42,7 @@ public class LessonController {
         }
         var lessonModel = new LessonModel();
         BeanUtils.copyProperties(lessonDto, lessonModel);
-        lessonModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
+        lessonModel.setCreationDate(LocalDateTime.now());
         lessonModel.setModule(moduleModelOptional.get());
         return ResponseEntity.status(HttpStatus.CREATED).body(lessonService.save(lessonModel));
     }

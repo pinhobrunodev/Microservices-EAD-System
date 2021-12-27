@@ -46,8 +46,8 @@ public class AuthenticationController {
         BeanUtils.copyProperties(userDto, userModel);
         userModel.setUserStatus(UserStatus.ACTIVE);
         userModel.setUserType(UserType.STUDENT);
-        userModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
-        userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+        userModel.setCreationDate(LocalDateTime.now());
+        userModel.setLastUpdateDate(LocalDateTime.now());
         userService.save(userModel);
         log.debug("POST registerUser userModel saved {}",userModel.toString());
         log.info("User saved successfully userId {}",userModel.getUserId());

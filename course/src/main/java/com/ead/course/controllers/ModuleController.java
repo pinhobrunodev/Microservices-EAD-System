@@ -41,7 +41,7 @@ public class ModuleController {
         }
         var moduleModel = new ModuleModel();
         BeanUtils.copyProperties(moduleDto, moduleModel);
-        moduleModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
+        moduleModel.setCreationDate(LocalDateTime.now());
         moduleModel.setCourse(course.get());
         return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.save(moduleModel));
     }

@@ -33,8 +33,8 @@ public class CourseController {
     public ResponseEntity<Object> saveCourse(@Valid @RequestBody CourseDto courseDto) {
         var course = new CourseModel();
         BeanUtils.copyProperties(courseDto, course);
-        course.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
-        course.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+        course.setCreationDate(LocalDateTime.now());
+        course.setLastUpdateDate(LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.CREATED).body(courseService.save(course));
     }
 
@@ -61,7 +61,7 @@ public class CourseController {
         courseModel.setImageUrl(courseDto.getImageUrl());
         courseModel.setCourseStatus(courseDto.getCourseStatus());
         courseModel.setCourseLevel(courseDto.getCourseLevel());
-        courseModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+        courseModel.setLastUpdateDate(LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.OK).body(courseService.save(courseModel));
     }
 

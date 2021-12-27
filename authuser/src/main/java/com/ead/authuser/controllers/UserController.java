@@ -88,7 +88,7 @@ public class UserController {
             userModel.setFullName(userDto.getFullName());
             userModel.setPhoneNumber(userDto.getPhoneNumber());
             userModel.setCpf(userDto.getCpf());
-            userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+            userModel.setLastUpdateDate(LocalDateTime.now());
             userService.save(userModel);
             log.debug("PUT updateUser userModel saved {}",userModel.toString());
             log.info("User updated successfully userId {}",userModel.getUserId());
@@ -112,7 +112,7 @@ public class UserController {
         } else {
             var userModel = userModelOptional.get();
             userModel.setPassword(userDto.getPassword());
-            userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+            userModel.setLastUpdateDate(LocalDateTime.now());
             userService.save(userModel);
             return ResponseEntity.ok().body("Password updated successfully.");
         }
@@ -130,7 +130,7 @@ public class UserController {
         }
         var userModel = userModelOptional.get();
         userModel.setImageUrl(userDto.getImageUrl());
-        userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+        userModel.setLastUpdateDate(LocalDateTime.now());
         userService.save(userModel);
         return ResponseEntity.ok().body(userModel);
     }
