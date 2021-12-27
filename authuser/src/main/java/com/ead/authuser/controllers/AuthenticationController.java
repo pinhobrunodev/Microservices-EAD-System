@@ -6,6 +6,8 @@ import com.ead.authuser.enums.UserType;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.services.impl.UserServiceImpl;
 import com.fasterxml.jackson.annotation.JsonView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,8 @@ import java.time.ZoneId;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping(value = "/auth")
 public class AuthenticationController {
+
+    private Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
     @Autowired
     private UserServiceImpl userService;
@@ -42,6 +46,16 @@ public class AuthenticationController {
         userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
         userService.save(userModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(userModel);
+    }
+
+    @GetMapping("/")
+    public String index(){
+        logger.trace("TRACE"); // -> Used to visualize with more  details
+        logger.debug("DEBUG"); // -> Used to development environment when people are developing.... Ex : Values of some variable....
+        logger.info("INFO"); // -> Used to visualize important infos not so detailed like the "trace"... Very common on Production....Only RELEVANT information
+        logger.warn("WARN"); // -> Used to visualize conflicts... show a alert... but is not a error..
+        logger.error("ERROR"); // -> Used when something go wrong... Very used on TryCatch... on the block Catch...to see what error is launched.
+        return "Logging Spring Boot...";
     }
 
 
