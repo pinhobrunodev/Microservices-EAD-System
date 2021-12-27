@@ -4,6 +4,7 @@ import com.ead.authuser.validation.UsernameConstraint;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -42,11 +43,13 @@ public class UserDto {
     @NotBlank(groups = {UserView.RegistrationPost.class, UserView.PasswordPut.class},message = "Mandatory field")
     @Size(min = 6,max = 20,groups = {UserView.RegistrationPost.class,UserView.PasswordPut.class},message = "Password must be between 6 and 20 characters")
     @JsonView({UserView.RegistrationPost.class, UserView.PasswordPut.class})
+    @ToString.Exclude // Exclude the password of toString() of @Data
     private String password;
 
     @NotBlank(groups = UserView.PasswordPut.class,message = "Mandatory field")
     @Size(min = 6,max = 20,groups = UserView.PasswordPut.class,message = "Password must be between 6 and 20 characters")
     @JsonView(UserView.PasswordPut.class)
+    @ToString.Exclude
     private String oldPassword;
 
     @JsonView({UserView.RegistrationPost.class, UserView.UserPut.class})
