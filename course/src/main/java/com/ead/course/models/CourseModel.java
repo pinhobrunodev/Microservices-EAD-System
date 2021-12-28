@@ -59,6 +59,7 @@ public class CourseModel implements Serializable {
 
         fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true ( Bad performance ... delete the course and delete each lesson... JPA does...)
         @OnDelete(action = OnDeleteAction.CASCADE) ( delete the course and the DATABASE will delete each module relation with a clever delete... but is still bad )
+        Best way -> Coding the method to delete os cascade =D
 
 
 
@@ -69,4 +70,12 @@ public class CourseModel implements Serializable {
     @OneToMany(mappedBy = "course",fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     private Set<ModuleModel> modules;
+
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "course",fetch = FetchType.LAZY)
+    @Fetch(FetchMode.JOIN)
+    private Set<CourseUserModel> coursesUsers;
+
+
 }
