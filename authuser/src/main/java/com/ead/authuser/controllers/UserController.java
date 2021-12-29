@@ -36,8 +36,14 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<Page<UserModel>> getAllUsers(SpecificationTemplate.UserSpec spec,
-                                                       @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable) {
-        Page<UserModel> userModelPage = userService.findAll(pageable, spec);
+                                                       @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable,
+                                                       @RequestParam(required = false) UUID courseId) {
+        Page<UserModel> userModelPage = null; // Two ways to enter the pagination
+        if (courseId != null) {
+            userModelPage = userService.findAll(pageable, SpecificationTemplate.userCourseId(courseId).and(spec));
+        } else {
+            userModelPage = userService.findAll(pageable, spec);
+        }
         // HATEOAS Impl.
         if (!userModelPage.isEmpty()) {
             for (UserModel user :
@@ -62,14 +68,14 @@ public class UserController {
 
     @DeleteMapping(value = "/{userId}")
     public ResponseEntity<Object> deleteUser(@PathVariable UUID userId) {
-        log.debug("DELETE deleteUser userId received {}",userId);
+        log.debug("DELETE deleteUser userId received {}", userId);
         Optional<UserModel> userModelOptional = userService.findById(userId);
         if (!userModelOptional.isPresent()) {
-            log.warn("userId {} not found",userId);
+            log.warn("userId {} not found", userId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         } else {
             userService.delete(userModelOptional.get());
-            log.info("User deleted successfully",userModelOptional.get());
+            log.info("User deleted successfully", userModelOptional.get());
 
             return ResponseEntity.ok().body("User deleted successfully.");
         }
@@ -79,7 +85,7 @@ public class UserController {
     public ResponseEntity<Object> updateUser(@PathVariable UUID userId,
                                              @RequestBody @Validated(UserDto.UserView.UserPut.class)
                                              @JsonView(UserDto.UserView.UserPut.class) UserDto userDto) {
-        log.debug("PUT updateUser userDto received {}",userDto.toString());
+        log.debug("PUT updateUser userDto received {}", userDto.toString());
         Optional<UserModel> userModelOptional = userService.findById(userId);
         if (!userModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
@@ -90,8 +96,8 @@ public class UserController {
             userModel.setCpf(userDto.getCpf());
             userModel.setLastUpdateDate(LocalDateTime.now());
             userService.save(userModel);
-            log.debug("PUT updateUser userModel saved {}",userModel.toString());
-            log.info("User updated successfully userId {}",userModel.getUserId());
+            log.debug("PUT updateUser userModel saved {}", userModel.toString());
+            log.info("User updated successfully userId {}", userModel.getUserId());
             return ResponseEntity.ok().body(userModel);
         }
     }
@@ -107,7 +113,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
         if (!userModelOptional.get().getPassword().equals(userDto.getOldPassword())) {
-            log.warn("Mismatched old password , userId {}",userId);
+            log.warn("Mismatched old password , userId {}", userId);
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error : Mismatched old password!");
         } else {
             var userModel = userModelOptional.get();

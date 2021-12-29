@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -69,8 +68,14 @@ public class CourseController {
     @GetMapping
     public ResponseEntity<Page<CourseModel>> getAllCourses(SpecificationTemplate.CourseSpec spec,
                                                            @PageableDefault(page = 0, size = 10, sort = "courseId", direction = Sort.Direction.ASC)
-                                                                   Pageable pageable) {
-        return ResponseEntity.ok().body(courseService.findAll(spec, pageable));
+                                                                   Pageable pageable, @RequestParam(required = false) UUID userId) {
+        Page<CourseModel> userModelPage = null; // Two ways to enter the pagination
+        if (userId != null) {
+            userModelPage = courseService.findAll(SpecificationTemplate.courseUserId(userId).and(spec), pageable);
+        } else {
+            userModelPage = courseService.findAll(spec, pageable);
+        }
+        return ResponseEntity.ok().body(userModelPage);
     }
 
 
