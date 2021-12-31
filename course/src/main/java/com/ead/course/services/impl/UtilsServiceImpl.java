@@ -20,4 +20,9 @@ public class UtilsServiceImpl implements UtilsService {
         return "/users/"+userId;
     }
 
+    @Override
+    public String createUrlSaveAndSendSubscriptionUserInCourse(UUID userId) {
+        return "/users/"+userId+"/courses/subscription";
+    }
+
 }

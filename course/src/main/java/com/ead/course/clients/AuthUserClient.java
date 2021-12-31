@@ -1,5 +1,6 @@
 package com.ead.course.clients;
 
+import com.ead.course.dtos.CourseUserDto;
 import com.ead.course.dtos.ResponsePageDto;
 import com.ead.course.dtos.UserDto;
 import com.ead.course.services.UtilsService;
@@ -57,4 +58,11 @@ public class AuthUserClient {
     }
 
 
+    public void postSubscriptionUserInCourse(UUID userId, UUID courseId) {
+        String url = REQUEST_URL_AUTHUSER + utilsService.createUrlSaveAndSendSubscriptionUserInCourse(userId);
+        var courseUserDto = new CourseUserDto();
+        courseUserDto.setUserId(userId);
+        courseUserDto.setCourseId(courseId);
+        restTemplate.postForObject(url, courseUserDto, String.class);
+    }
 }
