@@ -16,3 +16,19 @@ spring:
     properties:
       hibernate:
         show_sql: true
+  output:
+      ansi:
+        enabled: always
+# Log Level of Application
+logging:
+      level:
+        com.ead: TRACE
+        root: INFO # More details but not of Everything
+        org.springframework.web: DEBUG # Log to see into the Requests
+        org.hibernate: INFO  # Log to see the Hibernate
+
+
+ead:
+  api:
+    url:
+      authuser: 'http://localhost:8087'
