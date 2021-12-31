@@ -27,3 +27,8 @@ logging:
     root: INFO # More details but not of Everything
     org.springframework.web: DEBUG # Log to see into the Requests
     org.hibernate: INFO  # Log to see the Hibernate
+
+ead:
+  api:
+    url:
+      course: 'http://localhost:8082'

@@ -77,7 +77,7 @@ public class CourseModel implements Serializable {
     private Set<CourseUserModel> coursesUsers;
 
 
-    // Convertion course and userId to save on database.
+    // Conversion course and userId to save on database.
     public  CourseUserModel convertToCourseUserModel(UUID userId){
         return new CourseUserModel(null,this,userId);
         // this =  referee the course
