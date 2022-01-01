@@ -1,9 +1,11 @@
 package com.ead.course.services.impl;
 
 import com.ead.course.models.CourseModel;
+import com.ead.course.models.CourseUserModel;
 import com.ead.course.models.LessonModel;
 import com.ead.course.models.ModuleModel;
 import com.ead.course.repositories.CourseRepository;
+import com.ead.course.repositories.CourseUserRepository;
 import com.ead.course.repositories.LessonRepository;
 import com.ead.course.repositories.ModuleRepository;
 import com.ead.course.services.CourseService;
@@ -27,6 +29,8 @@ public class CourseServiceImpl implements CourseService {
     private ModuleRepository moduleRepository;
     @Autowired
     private LessonRepository lessonRepository;
+    @Autowired
+    private CourseUserRepository courseUserRepository;
 
     // Deleting in Cascade
     @Transactional
@@ -41,6 +45,10 @@ public class CourseServiceImpl implements CourseService {
                 }
             }
             moduleRepository.deleteAll(modules);
+        }
+        List<CourseUserModel> courseUserModelList = courseUserRepository.findAllCourseUserIntoCourse(courseModel.getCourseId());
+        if (!courseUserModelList.isEmpty()) {
+            courseUserRepository.deleteAll(courseUserModelList);
         }
         courseRepository.delete(courseModel);
     }
@@ -57,7 +65,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Page<CourseModel> findAll(Specification<CourseModel> spec, Pageable pageable) {
-        return courseRepository.findAll(spec,pageable);
+        return courseRepository.findAll(spec, pageable);
     }
 
 }
