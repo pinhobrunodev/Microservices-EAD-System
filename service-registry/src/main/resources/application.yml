@@ -1,0 +1,12 @@
+server:
+  port: 8761
+
+spring:
+  application:
+    name: ead-service-registry
+
+
+eureka:
+  client:
+    register-with-eureka: false  # Dont register as Client
+    fetch-registry: false # Don't search the own registry on eureka server
