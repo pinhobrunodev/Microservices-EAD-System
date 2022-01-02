@@ -1,5 +1,5 @@
 server:
-  port: 8087
+  port: ${PORT:0}
   servlet:
     context-path: '/ead-authuser/' # Default RequestMapping
 
@@ -35,7 +35,7 @@ logging:
 ead:
   api:
     url:
-      course: 'http://ead-course-service'  # ID eureka ( application name)
+      course: 'http://ead-course-service/ead-course'  # ID eureka ( application name)
 
 eureka:
   client:
@@ -43,3 +43,5 @@ eureka:
       defaultZone: 'http://localhost:8761/eureka'
       instance:
         hostname: localhost
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
