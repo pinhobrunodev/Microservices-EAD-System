@@ -1,7 +1,9 @@
 server:
   port: 8087
 
-spring:
+spring: # Name of microservice when they are clients on eureka
+  application:
+    name: ead-authuser
   datasource:
     url: jdbc:postgresql://localhost:5432/ead-authuser?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false
     username: postgres
@@ -32,3 +34,10 @@ ead:
   api:
     url:
       course: 'http://localhost:8082'
+
+eureka:
+  client:
+    service-url:
+      defaultZone: 'http://localhost:8761/eureka'
+      instance:
+        hostname:localhost
