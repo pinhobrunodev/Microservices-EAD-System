@@ -3,7 +3,7 @@ server:
 
 spring: # Name of microservice when they are clients on eureka
   application:
-    name: ead-authuser
+    name: ead-authuser-service
   datasource:
     url: jdbc:postgresql://localhost:5432/ead-authuser?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false
     username: postgres
@@ -33,7 +33,7 @@ logging:
 ead:
   api:
     url:
-      course: 'http://localhost:8082'
+      course: 'http://ead-course-service'  # ID eureka ( application name)
 
 eureka:
   client:
