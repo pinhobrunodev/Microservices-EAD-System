@@ -1,5 +1,6 @@
 package com.ead.course.services.impl;
 
+import com.ead.course.clients.AuthUserClient;
 import com.ead.course.models.CourseModel;
 import com.ead.course.models.CourseUserModel;
 import com.ead.course.models.LessonModel;
@@ -31,11 +32,16 @@ public class CourseServiceImpl implements CourseService {
     private LessonRepository lessonRepository;
     @Autowired
     private CourseUserRepository courseUserRepository;
+    @Autowired
+    private AuthUserClient authUserClient;
 
     // Deleting in Cascade
     @Transactional
     @Override
     public void delete(CourseModel courseModel) {
+        boolean deleteCourseUserInAuthUser = false;
+
+
         List<ModuleModel> modules = moduleRepository.findAllModulesIntoCourse(courseModel.getCourseId());
         if (!modules.isEmpty()) {
             for (ModuleModel module : modules) {
@@ -49,8 +55,13 @@ public class CourseServiceImpl implements CourseService {
         List<CourseUserModel> courseUserModelList = courseUserRepository.findAllCourseUserIntoCourse(courseModel.getCourseId());
         if (!courseUserModelList.isEmpty()) {
             courseUserRepository.deleteAll(courseUserModelList);
+            // If exists relation between Course and User on COURSE-MS... in AUTHUSER-MS will exist too.
+            deleteCourseUserInAuthUser = true;
         }
         courseRepository.delete(courseModel);
+        if(deleteCourseUserInAuthUser){
+            authUserClient.deleteCourseInAuthUser(courseModel.getCourseId());
+        }
     }
 
     @Override

@@ -37,9 +37,14 @@ public class CourseUserController {
 
     // CourseDto because is the courses that we need
     @GetMapping(value = "/courses/{courseId}/users")
-    public ResponseEntity<Page<UserDto>> getAllUsersByCourse(@PageableDefault(page = 0, size = 10, sort = "userId",
+    public ResponseEntity<Object> getAllUsersByCourse(@PageableDefault(page = 0, size = 10, sort = "userId",
             direction = Sort.Direction.ASC) Pageable pageable
             , @PathVariable UUID courseId) {
+        // Validating if the course have some user... if don't..wont make a sync request
+        Optional<CourseModel> course = courseService.findById(courseId);
+        if (course.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
+        }
         log.debug("courseId : {}", courseId);
         return ResponseEntity.ok().body(authUserClient.getAllUsersByCourse(courseId, pageable));
     }

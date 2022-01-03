@@ -24,6 +24,9 @@ import java.util.UUID;
 @Component
 public class AuthUserClient {
 
+
+    private String url;
+
     @Autowired
     private UtilsService utilsService;
     @Autowired
@@ -35,7 +38,7 @@ public class AuthUserClient {
 
     public Page<UserDto> getAllUsersByCourse(UUID userId, Pageable pageable) {
         List<UserDto> searchResult = null;
-        String url = REQUEST_URL_AUTHUSER + utilsService.createUrlGetAllUsersByCourse(userId, pageable);
+        url = REQUEST_URL_AUTHUSER + utilsService.createUrlGetAllUsersByCourse(userId, pageable);
         log.debug("Request URL : {}", url);
         log.info("Request URL : {}", url);
         try {
@@ -53,16 +56,21 @@ public class AuthUserClient {
     }
 
     public ResponseEntity<UserDto> getOneUserById(UUID userId) {
-        String url = REQUEST_URL_AUTHUSER + utilsService.createUrlGetOneUserById(userId);
+        url = REQUEST_URL_AUTHUSER + utilsService.createUrlGetOneUserById(userId);
         return restTemplate.exchange(url, HttpMethod.GET, null, UserDto.class);
     }
 
 
     public void postSubscriptionUserInCourse(UUID userId, UUID courseId) {
-        String url = REQUEST_URL_AUTHUSER + utilsService.createUrlSaveAndSendSubscriptionUserInCourse(userId);
+        url = REQUEST_URL_AUTHUSER + utilsService.createUrlSaveAndSendSubscriptionUserInCourse(userId);
         var courseUserDto = new CourseUserDto();
         courseUserDto.setUserId(userId);
         courseUserDto.setCourseId(courseId);
         restTemplate.postForObject(url, courseUserDto, String.class);
+    }
+
+    public void deleteCourseInAuthUser(UUID courseId) {
+        url = REQUEST_URL_AUTHUSER + utilsService.createUrlDeleteCourseInAuthUser(courseId);
+        restTemplate.exchange(url,HttpMethod.DELETE,null,String.class);
     }
 }
