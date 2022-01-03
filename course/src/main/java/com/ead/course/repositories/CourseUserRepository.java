@@ -13,4 +13,8 @@ public interface CourseUserRepository extends JpaRepository<CourseUserModel, UUI
 
     @Query(value = "select * from tb_courses_users where course_id = :courseId",nativeQuery = true)
     List<CourseUserModel> findAllCourseUserIntoCourse(UUID courseId);
+
+    boolean existsByUserId(UUID userId);
+
+    void deleteAllByUserId(UUID userId);
 }
