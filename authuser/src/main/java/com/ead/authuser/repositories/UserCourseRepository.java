@@ -13,4 +13,9 @@ public interface UserCourseRepository extends JpaRepository<UserCourseModel, UUI
 
     @Query(value = "select * from tb_users_courses where user_id = :userId", nativeQuery = true)
     List<UserCourseModel> findAllUserCourseIntoUser(UUID userId);
+
+    boolean existsByCourseId(UUID courseId);
+
+    //Delete all the elements that has the courseId associated with a user.
+    void deleteAllByCourseId(UUID courseId);
 }
