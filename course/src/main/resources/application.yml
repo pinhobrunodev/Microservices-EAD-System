@@ -33,11 +33,16 @@ logging:
     org.springframework.web: DEBUG # Log to see into the Requests
     org.hibernate: INFO  # Log to see the Hibernate
 
-
 ead:
   api:
     url:
-      authuser: 'http://ead-authuser-service/ead-authuser'
+        authuser: 'http://ead-authuser-service/ead-authuser'
+  broker:
+    exchange:
+        userEventExchange: ead.userevent
+    queue:
+      userEventQueue:
+        name: ead.userevent.ms.course # Queue that Course-MS will be listening referee to ead.userevent exchange
 
 eureka:
   client:

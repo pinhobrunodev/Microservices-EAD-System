@@ -19,4 +19,9 @@ public class UserModelServiceImpl implements UserModelService {
     public Page<UserModel> findAll(Specification<UserModel> spec, Pageable pageable) {
         return userModelRepository.findAll(spec,pageable);
     }
+
+    @Override
+    public UserModel saveUserEventState(UserModel userModel) {
+        return userModelRepository.save(userModel);
+    }
 }

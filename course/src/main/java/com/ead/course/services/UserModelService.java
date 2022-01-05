@@ -8,4 +8,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 public interface UserModelService {
     Page<UserModel> findAll(Specification<UserModel> spec, Pageable pageable);
+
+    UserModel saveUserEventState(UserModel userModel);
 }
