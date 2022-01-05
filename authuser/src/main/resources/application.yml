@@ -24,6 +24,9 @@ spring: # Name of microservice when they are clients on eureka
     ansi:
       enabled: always
 
+  rabbitmq:
+    addresses: amqps://eratseqp:pl2pjg1iStqdt50Nppk-zY_1EXGE6Ijp@fish.rmq.cloudamqp.com/eratseqp
+
 # Log Level of Application
 logging:
   level:
