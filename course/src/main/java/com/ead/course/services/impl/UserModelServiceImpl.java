@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -21,6 +22,10 @@ public class UserModelServiceImpl implements UserModelService {
     public Page<UserModel> findAll(Specification<UserModel> spec, Pageable pageable) {
         return userModelRepository.findAll(spec,pageable);
     }
+    @Override
+    public Optional<UserModel> findById(UUID userInstructor) {
+        return userModelRepository.findById(userInstructor);
+    }
 
     @Override
     public UserModel saveUserEventState(UserModel userModel) {
@@ -31,4 +36,6 @@ public class UserModelServiceImpl implements UserModelService {
     public void deleteUserEventState(UUID userId) {
         userModelRepository.deleteById(userId);
     }
+
+
 }

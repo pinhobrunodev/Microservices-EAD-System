@@ -1,7 +1,9 @@
 package com.ead.course.controllers;
 
 import com.ead.course.dtos.SubscriptionDto;
+import com.ead.course.enums.UserStatus;
 import com.ead.course.models.CourseModel;
+import com.ead.course.models.UserModel;
 import com.ead.course.services.UserModelService;
 import com.ead.course.services.impl.CourseServiceImpl;
 import com.ead.course.specifications.SpecificationTemplate;
@@ -49,8 +51,23 @@ public class CourseUserController {
         if (courseModelOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
         }
-        //TODO: verifying with state transfer
-        return ResponseEntity.status(HttpStatus.CREATED).body(""); // TODO: implementing ..
+        // Validating if exists already a USER-COURSE (1-1)
+        if (courseService.existsByCourseAndUser(courseId,dto.getUserId())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: subscription already exists!");
+        }
+        Optional<UserModel> userModelOptional = userModelService.findById(dto.getUserId());
+        // Validating if the User Exists
+        if (userModelOptional.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+        //Validating if the user is ACTIVE OR BLOCKED
+        if (userModelOptional.get().getUserStatus().equals(UserStatus.BLOCKED.toString())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User is blocked.");
+        }
+        //Saving on the auxiliary table.
+        courseService.saveSubscriptionUserInCourse(courseModelOptional.get().getCourseId(),userModelOptional.get().getUserId());
+        log.debug("UserID {} , CourseID {}",userModelOptional.get().getUserId(),courseModelOptional.get().getCourseId());
+        return ResponseEntity.status(HttpStatus.CREATED).body("Subscription created successfully.");
     }
 
 }
