@@ -20,11 +20,23 @@ public interface UserService {
 
     UserModel save(UserModel userModel);
 
+    // Operation of User Control
+    UserModel updatePassword(UserModel userModel);
+
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
 
     Page<UserModel> findAll(Pageable pageable, Specification<UserModel> spec);
 
-   UserModel saveUserAndPublishEvent(UserModel userModel);
+    // ASYNC
+
+    UserModel saveUserAndPublishEvent(UserModel userModel);
+
+    void deleteUserAndPublishEvent(UserModel userModel);
+
+    UserModel updateUserAndPublishEvent(UserModel userModel);
+
+
+
 }

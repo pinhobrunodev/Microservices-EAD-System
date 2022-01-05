@@ -68,6 +68,12 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll(spec, pageable);
     }
 
+    @Override
+    public UserModel updatePassword(UserModel userModel) {
+        return save(userModel);
+    }
+
+
     @Transactional // If something o wrong on the Async Communication.. rollback..
     @Override
     public UserModel saveUserAndPublishEvent(UserModel userModel) {
@@ -75,5 +81,21 @@ public class UserServiceImpl implements UserService {
         userEventPublisher.publishUserEvent(userModel.convertToUserEventDto(), ActionType.CREATE);
         return userModel;
     }
+
+    @Transactional
+    @Override
+    public UserModel updateUserAndPublishEvent(UserModel userModel) {
+        userModel = save(userModel);
+        userEventPublisher.publishUserEvent(userModel.convertToUserEventDto(), ActionType.UPDATE);
+        return userModel;
+    }
+
+    @Transactional
+    @Override
+    public void deleteUserAndPublishEvent(UserModel userModel) {
+        delete(userModel);
+        userEventPublisher.publishUserEvent(userModel.convertToUserEventDto(), ActionType.DELETE);
+    }
+
 
 }

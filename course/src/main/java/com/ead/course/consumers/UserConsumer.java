@@ -21,19 +21,19 @@ public class UserConsumer {
 
     // Listen the events that AuthUser will send..... when start the application will create this queue...
     @RabbitListener(bindings = @QueueBinding(
-            value = @Queue(value = "${ead.broker.queue.userEventQueue.name}",durable = "true"), // Name of the Queue
-            exchange = @Exchange(value = "${ead.broker.exchange.userEventExchange}" ,type = ExchangeTypes.FANOUT,ignoreDeclarationExceptions = "true")
+            value = @Queue(value = "${ead.broker.queue.userEventQueue.name}", durable = "true"), // Name of the Queue
+            exchange = @Exchange(value = "${ead.broker.exchange.userEventExchange}", type = ExchangeTypes.FANOUT, ignoreDeclarationExceptions = "true")
             // if you don't define the type of exchange on "Producer" we can define on the consumer
     ))
-    public void listenUserEvent(@Payload UserEventDto userEventDto){
+    public void listenUserEvent(@Payload UserEventDto userEventDto) {
         var userModel = userEventDto.convertToUserModel();
-        switch (ActionType.valueOf(userEventDto.getActionType())){
+        switch (ActionType.valueOf(userEventDto.getActionType())) {
             case CREATE:
+            case UPDATE:
                 userModelService.saveUserEventState(userModel);
                 break;
             case DELETE:
-                break;
-            case UPDATE:
+                userModelService.deleteUserEventState(userModel.getUserId());
                 break;
         }
     }

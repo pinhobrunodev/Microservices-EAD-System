@@ -32,7 +32,7 @@ public class InstructorController {
             var userModel = userModelOptional.get();
             userModel.setUserType(UserType.INSTRUCTOR);
             userModel.setLastUpdateDate(LocalDateTime.now());
-            userService.save(userModel);
+            userService.updateUserAndPublishEvent(userModel);
             return ResponseEntity.ok().body(userModel);
 
         }
