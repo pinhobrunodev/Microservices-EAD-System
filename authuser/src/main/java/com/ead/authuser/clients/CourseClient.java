@@ -3,7 +3,6 @@ package com.ead.authuser.clients;
 import com.ead.authuser.dtos.CourseDto;
 import com.ead.authuser.dtos.ResponsePageDto;
 import com.ead.authuser.services.UtilsService;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,8 +52,4 @@ public class CourseClient {
     }
 
 
-    public void deleteUserInCourse(UUID userId) {
-        url = REQUEST_URL_COURSE + utilsService.createUrlDeleteUserInCourse(userId);
-        restTemplate.exchange(url,HttpMethod.DELETE,null,String.class);
-    }
 }

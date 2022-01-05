@@ -7,7 +7,7 @@ spring: # Name of microservice when they are clients on eureka
   application:
     name: ead-authuser-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/ead-authuser?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false
+    url: jdbc:postgresql://localhost:5432/ead-authuser-v2?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false
     username: postgres
     password: 123
 
