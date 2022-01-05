@@ -33,7 +33,7 @@ public class UserConsumer {
                 userModelService.saveUserEventState(userModel);
                 break;
             case DELETE:
-                userModelService.deleteUserEventState(userModel.getUserId());
+                userModelService.deleteUserEventState(userEventDto.getUserId());
                 break;
         }
     }
