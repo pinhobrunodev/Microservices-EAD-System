@@ -35,7 +35,7 @@ public class CourseModel implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime creationDate;
     @Column(nullable = false)
-   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime lastUpdateDate;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -67,20 +67,9 @@ public class CourseModel implements Serializable {
 
     // Specify how the access of serialization will be... /GET All Courses => Ignore the Modules
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @OneToMany(mappedBy = "course",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     private Set<ModuleModel> modules;
 
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @OneToMany(mappedBy = "course",fetch = FetchType.LAZY)
-    private Set<CourseUserModel> coursesUsers;
-
-
-    // Conversion course and userId to save on database.
-    public  CourseUserModel convertToCourseUserModel(UUID userId){
-        return new CourseUserModel(null,this,userId);
-        // this =  referee the course
-    }
 
 }
