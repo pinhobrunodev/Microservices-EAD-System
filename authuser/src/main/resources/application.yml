@@ -39,6 +39,9 @@ ead:
   api:
     url:
       course: 'http://ead-course-service/ead-course'  # ID eureka ( application name)
+  broker:
+    exchange:
+      userEvent: ead.userevent # AuthUser will send the events to this exchange
 
 eureka:
   client:

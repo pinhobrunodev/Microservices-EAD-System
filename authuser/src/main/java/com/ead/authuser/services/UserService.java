@@ -18,11 +18,13 @@ public interface UserService {
 
     void delete(UserModel userModel);
 
-    void save(UserModel userModel);
+    UserModel save(UserModel userModel);
 
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
 
     Page<UserModel> findAll(Pageable pageable, Specification<UserModel> spec);
+
+   UserModel saveUserAndPublishEvent(UserModel userModel);
 }
