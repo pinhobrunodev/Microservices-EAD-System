@@ -51,3 +51,12 @@ eureka:
         hostname: localhost
   instance:
     instance-id: ${spring.application.name}:${random.value}
+
+# Circuit Breaker with Resilience4J -> RETRY CONFIG
+resilience4j:
+  retry:
+    instances:
+      retryInstance:
+        maxRetryAttempts: 3   # 3 Requests for Retry with 5s Between each Request
+        waitDuration: 5s
+

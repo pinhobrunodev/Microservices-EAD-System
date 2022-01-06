@@ -3,6 +3,7 @@ package com.ead.authuser.clients;
 import com.ead.authuser.dtos.CourseDto;
 import com.ead.authuser.dtos.ResponsePageDto;
 import com.ead.authuser.services.UtilsService;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,6 +34,10 @@ public class CourseClient {
 
     private String url;
 
+
+    // Setting the Retry Resilience and FallbackMethod when retry 3 times to send the request
+    // Retry is not a good one becasue we are sending requests to a mMicroservice that already is having problems... so Circuit Breaker is BETTER
+    //@Retry(name = "retryInstance", fallbackMethod = "retryFallback")
     public Page<CourseDto> getAllCoursesByUser(UUID userId, Pageable pageable) {
         List<CourseDto> searchResult = null;
         url = REQUEST_URL_COURSE + utilsService.createUrlGetAllCoursesByUser(userId, pageable);
@@ -51,5 +57,12 @@ public class CourseClient {
         return new PageImpl<>(searchResult);
     }
 
+    // Need the same RETURN and the same PARAMETERS of the Original Method  and  Exception Parameter (Throwable -> Superclass of Exceptions Java Throw)
+    public Page<CourseDto> retryFallback(UUID userId, Pageable pageable, Throwable t) {
+        log.error("Inside retry retryFallback, cause - {}", t.toString());
+        // Empty pagination
+        List<CourseDto> searchResult = new ArrayList<>();
+        return new PageImpl<>(searchResult);
+    }
 
 }

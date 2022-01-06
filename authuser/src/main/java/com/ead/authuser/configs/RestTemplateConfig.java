@@ -6,14 +6,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
+
 @Configuration
 public class RestTemplateConfig {
+    // Retry -> Before Launch Exception We need depending on services layer...retry the request
+
+    static final int TIMEOUT = 5000;
 
     //  Load balance when making an HTTP Requisition
     @LoadBalanced
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.build();
+
+        return builder
+                .setConnectTimeout(Duration.ofMillis(TIMEOUT))
+                .setReadTimeout(Duration.ofMillis(TIMEOUT))
+                .build();
     }
 
 }
