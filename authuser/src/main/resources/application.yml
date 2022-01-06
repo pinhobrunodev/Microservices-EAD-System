@@ -52,7 +52,7 @@ eureka:
   instance:
     instance-id: ${spring.application.name}:${random.value}
 
-# Circuit Breaker with Resilience4J -> RETRY CONFIG
+#  Resilience4J -> RETRY CONFIG
 resilience4j:
   retry:
     instances:
@@ -60,3 +60,13 @@ resilience4j:
         maxRetryAttempts: 3   # 3 Requests for Retry with 5s Between each Request
         waitDuration: 5s
 
+  #  Resilience4J -> CircuitBreaker CONFIG
+  circuitbreaker:
+    instances:
+      circuitbreakerInstance:
+        slidingWindowSize: 30 # PERIOD THAT CIRCUIT BREAKER WILL ANALYZE (30S)
+        permittedNumberOfCallsInHalfOpenState: 2 # TOTAL REQUESTS WHILE ON HALF_OPEN_STATE AFTER THE waitDurationInOpenState(30S)...SENDING REQUESTS TO OTHER MS  AND VERIFYING IF IS OK (CLOSE) IF NOT (OPEN)
+        slidingWindowType: TIME_BASED  # TYPE OF CIRCUIT BREAKER
+        minimumNumberOfCalls: 2 # AFTER 2 REQUESTS WILL BE PROCESSING THE ANALYZE THE failureRateThreshold
+        waitDurationInOpenState: 30s # WAIT TIME IN OPEN STATE ( DENIED ALL THE REQUESTS TO THE MICROSERVICE ON THE OTHER WAY )
+        failureRateThreshold: 80 # FAILURE TAX OF slidingWindowSize (30s) if 80% has failure will set to OPEN
