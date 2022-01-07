@@ -1,72 +1,80 @@
-server:
-  port: ${PORT:0}
-  servlet:
-    context-path: '/ead-authuser/' # Default RequestMapping
-
+#server:
+#  port: ${PORT:0}
+#  servlet:
+#    context-path: '/ead-authuser/' # Default RequestMapping
+#
 spring: # Name of microservice when they are clients on eureka
   application:
     name: ead-authuser-service
-  datasource:
-    url: jdbc:postgresql://localhost:5432/ead-authuser-v2?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false
-    username: postgres
-    password: 123
+  config:                             # import: 'optional:configserver:'
+    import: 'configserver:'  # "optional:" Allows the default configuration of authuser application.yml when our config-server is offline
+  cloud:
+    config:
+      discovery:
+        service-id: ead-config-server   # Target into config-server.. to be a config client
 
-  jpa:
-    hibernate:
-      ddl-auto: update
-      dialect: org.hibernate.dialect.PostgreSQLDialect
-      jdbc:
-        lob.non-contextual-creation:true
-    properties:
-      hibernate:
-        show_sql: true
-  output:
-    ansi:
-      enabled: always
-
-  rabbitmq:
-    addresses: amqps://eratseqp:pl2pjg1iStqdt50Nppk-zY_1EXGE6Ijp@fish.rmq.cloudamqp.com/eratseqp
-
-# Log Level of Application
-logging:
-  level:
-    com.ead: TRACE
-    root: INFO # More details but not of Everything
-    org.springframework.web: DEBUG # Log to see into the Requests
-    org.hibernate: INFO  # Log to see the Hibernate
-
-ead:
-  api:
-    url:
-      course: 'http://ead-course-service/ead-course'  # ID eureka ( application name)
-  broker:
-    exchange:
-      userEvent: ead.userevent # AuthUser will send the events to this exchange
-
-eureka:
-  client:
-    service-url:
-      defaultZone: 'http://localhost:8761/eureka'
-      instance:
-        hostname: localhost
-  instance:
-    instance-id: ${spring.application.name}:${random.value}
-
-#  Resilience4J -> RETRY CONFIG
-resilience4j:
-  retry:
-    instances:
-      retryInstance:
-        maxRetryAttempts: 3   # 3 Requests for Retry with 5s Between each Request
-        waitDuration: 5s
-
-  #  Resilience4J -> CircuitBreaker CONFIG
-  circuitbreaker:
-    instances:
-      circuitbreakerInstance:
-        slidingWindowSize: 30 # PERIOD THAT CIRCUIT BREAKER WILL ANALYZE (30S)
-        permittedNumberOfCallsInHalfOpenState: 2 # TOTAL REQUESTS WHILE ON HALF_OPEN_STATE AFTER THE waitDurationInOpenState(30S)...SENDING REQUESTS TO OTHER MS  AND VERIFYING IF IS OK (CLOSE) IF NOT (OPEN)
-        slidingWindowType: TIME_BASED  # TYPE OF CIRCUIT BREAKER
-        minimumNumberOfCalls: 2 # AFTER 2 REQUESTS WILL BE PROCESSING THE ANALYZE THE failureRateThreshold
-        waitDurationInOpenState: 30s # WAIT TIME IN OPEN STATE ( DENIED ALL THE REQUESTS TO THE MICROSERVICE ON THE OTHER WAY )
-        failureRateThreshold: 80 # FAILURE TAX OF slidingWindowSize (30s) if 80% has failure will set to OPEN
+#
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/ead-authuser-v2?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false
+#    username: postgres
+#    password: 123
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#      dialect: org.hibernate.dialect.PostgreSQLDialect
+#      jdbc:
+#        lob.non-contextual-creation:true
+#    properties:
+#      hibernate:
+#        show_sql: true
+#  output:
+#    ansi:
+#      enabled: always
+#
+#  rabbitmq:
+#    addresses: amqps://eratseqp:pl2pjg1iStqdt50Nppk-zY_1EXGE6Ijp@fish.rmq.cloudamqp.com/eratseqp
+#
+## Log Level of Application
+#logging:
+#  level:
+#    com.ead: TRACE
+#    root: INFO # More details but not of Everything
+#    org.springframework.web: DEBUG # Log to see into the Requests
+#    org.hibernate: INFO  # Log to see the Hibernate
+#
+#ead:
+#  api:
+#    url:
+#      course: 'http://ead-course-service/ead-course'  # ID eureka ( application name)
+#  broker:
+#    exchange:
+#      userEvent: ead.userevent # AuthUser will send the events to this exchange
+#
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: 'http://localhost:8761/eureka'
+#      instance:
+#        hostname: localhost
+#  instance:
+#    instance-id: ${spring.application.name}:${random.value}
+#
+##  Resilience4J -> RETRY CONFIG
+#resilience4j:
+#  retry:
+#    instances:
+#      retryInstance:
+#        maxRetryAttempts: 3   # 3 Requests for Retry with 5s Between each Request
+#        waitDuration: 5s
+#
+#  #  Resilience4J -> CircuitBreaker CONFIG
+#  circuitbreaker:
+#    instances:
+#      circuitbreakerInstance:
+#        slidingWindowSize: 30 # PERIOD THAT CIRCUIT BREAKER WILL ANALYZE (30S)
+#        permittedNumberOfCallsInHalfOpenState: 2 # TOTAL REQUESTS WHILE ON HALF_OPEN_STATE AFTER THE waitDurationInOpenState(30S)...SENDING REQUESTS TO OTHER MS  AND VERIFYING IF IS OK (CLOSE) IF NOT (OPEN)
+#        slidingWindowType: TIME_BASED  # TYPE OF CIRCUIT BREAKER
+#        minimumNumberOfCalls: 2 # AFTER 2 REQUESTS WILL BE PROCESSING THE ANALYZE THE failureRateThreshold
+#        waitDurationInOpenState: 30s # WAIT TIME IN OPEN STATE ( DENIED ALL THE REQUESTS TO THE MICROSERVICE ON THE OTHER WAY )
+#        failureRateThreshold: 80 # FAILURE TAX OF slidingWindowSize (30s) if 80% has failure will set to OPEN
