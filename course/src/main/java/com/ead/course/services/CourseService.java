@@ -22,5 +22,7 @@ public interface CourseService {
 
     boolean existsByCourseAndUser(UUID courseId, UUID userId);
 
-    void saveSubscriptionUserInCourse(UUID courseId, UUID userId);
+    //void saveSubscriptionUserInCourse(UUID courseId, UUID userId);
+
+    void saveSubscriptionUserInCourseAndSendPublishCommandEventNotification(CourseModel courseModel, UserModel userModel);
 }
