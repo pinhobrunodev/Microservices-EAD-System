@@ -1,68 +1,64 @@
-server:
-  port: ${PORT:0}
-  servlet:
-    context-path: '/ead-notification/'
-
+#server:
+#  port: ${PORT:0}
+#  servlet:
+#    context-path: '/ead-notification/'
+#
 spring:
   application:
     name: ead-notification-service
   config:
-    import: 'optional:configserver:'
+    import: 'configserver:'
   cloud:
     config:
       discovery:
         serviceId: ead-config-server
-  datasource:
-    url:  jdbc:postgresql://localhost:5432/ead-notification-v2
-    username: postgres
-    password: 123
-  jpa:
-    hibernate:
-      ddl-auto: update
-      dialect: org.hibernate.dialect.PostgreSQLDialect
-      jdbc:
-        lob.non-contextual-creation: true
-    properties:
-      hibernate:
-        show_sql: true
-  output:
-    ansi:
-      enabled: Always
-  rabbitmq:
-    addresses: amqps://eratseqp:pl2pjg1iStqdt50Nppk-zY_1EXGE6Ijp@fish.rmq.cloudamqp.com/eratseqp
-
-
-logging:
-  level:
-    com.ead: TRACE
-    root: INFO
-    org.springframework.web: DEBUG
-    org.hibernate: INFO
-
-
-ead:
-  broker:
-    exchange:
-      notificationCommandExchange: ead.notificationcommand
-    queue:
-      notificationCommandQueue:
-        name: ead.notificationcommand.ms.notification
-    key:
-      notificationCommandKey: ms.notification
-
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include:
-          - refresh
-          - health
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: 'http://localhost:8761/eureka'
-  instance:
-    hostname: localhost
-    instance-id: ${spring.application.name}:${random.value}
+#  datasource:
+#    url:  jdbc:postgresql://localhost:5432/ead-notification-v2
+#    username: postgres
+#    password: 123
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#      dialect: org.hibernate.dialect.PostgreSQLDialect
+#      jdbc:
+#        lob.non-contextual-creation: true
+#    properties:
+#      hibernate:
+#        show_sql: true
+#  output:
+#    ansi:
+#      enabled: Always
+#  rabbitmq:
+#    addresses: amqps://eratseqp:pl2pjg1iStqdt50Nppk-zY_1EXGE6Ijp@fish.rmq.cloudamqp.com/eratseqp
+#
+#
+#logging:
+#  level:
+#    com.ead: TRACE
+#    root: INFO
+#    org.springframework.web: DEBUG
+#    org.hibernate: INFO
+#
+#
+#ead:
+#  broker:
+#    exchange:
+#      notificationCommandExchange: ead.notificationcommand
+#    queue:
+#      notificationCommandQueue:
+#        name: ead.notificationcommand.ms.notification
+#    key:
+#      notificationCommandKey: ms.notification
+#
+#
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include:
+#          - refresh
+#          - health
+#
+#eureka:
+#  instance:
+#    instance-id: ${spring.application.name}:${random.value}
