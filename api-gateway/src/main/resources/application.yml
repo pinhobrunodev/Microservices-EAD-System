@@ -15,6 +15,10 @@ spring:
           uri: lb://EAD-COURSE-SERVICE
           predicates:
               - Path= /ead-course/**  # Everything that comes on this path will be to EAD-COURSE-SERVICE
+        - id: notification-service
+          uri: lb://EAD-NOTIFICATION-SERVICE # lb = load balance
+          predicates:
+              - Path= /ead-notification/**
 eureka:
   client:
     service-url:
