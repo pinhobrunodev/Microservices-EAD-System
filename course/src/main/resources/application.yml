@@ -1,9 +1,4 @@
-#server:
-#  port: ${PORT:0}
-#  servlet:
-#    context-path: '/ead-course/'  #Default RequestMapping
-#
-#
+
 spring: #Name of microservice when they are clients on eureka
   application:
     name: ead-course-service
@@ -13,63 +8,5 @@ spring: #Name of microservice when they are clients on eureka
     config:
       discovery:
         service-id: ead-config-server    #Target into config-server.. to be a config client
-
-
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/ead-course-v2
-#    username: postgres
-#    password: 123
-#
-#  jpa:
-#    hibernate:
-#      ddl-auto: update
-#      dialect: org.hibernate.dialect.PostgreSQLDialect
-#      jdbc:
-#        lob.non-contextual-creation:true
-#    properties:
-#      hibernate:
-#        show_sql: true
-#  output:
-#    ansi:
-#      enabled: always
-#  rabbitmq:
-#    addresses: amqps://eratseqp:pl2pjg1iStqdt50Nppk-zY_1EXGE6Ijp@fish.rmq.cloudamqp.com/eratseqp
-# #Log Level of Application
-#logging:
-#  level:
-#    com.ead: TRACE
-#    root: INFO  #More details but not of Everything
-#    org.springframework.web: DEBUG  #Log to see into the Requests
-#    org.hibernate: INFO   #Log to see the Hibernate
-#
-#ead:
-#  api:
-#    url:
-#        authuser: 'http://ead-authuser-service/ead-authuser'
-#  broker:
-#    exchange:
-#        userEventExchange: ead.userevent
-#        notificationCommandExchange: ead.notificationcommand  # Exchange to publish
-#    queue:
-#      userEventQueue:
-#        name: ead.userevent.ms.course  #Queue that Course-MS will be listening referee to ead.userevent exchange
-#    key:
-#      notificationCommandKey: ms.notification  # Binding referee to Exchange to send the specific queue
-#
-#authuser:   #Testing the RefreshScope.. if the name will be updated without reinitializing the application "course"
-#  refreshscope:
-#    name: Course Actuator
-#
-##Actuator configuration => See the metrics of application.. health application... refresh=> update the specific bean
-#management:
-#  endpoints:
-#    web:
-#      exposure:
-#        include:
-#          - refresh
-#          - health
-#
-#
-#eureka:
-#  instance:
-#    instance-id: ${spring.application.name}:${random.value}
+      username: configserver
+      password: 'ead123cs'
