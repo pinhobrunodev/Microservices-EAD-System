@@ -16,4 +16,4 @@ eureka:
     register-with-eureka: false  # Dont register as Client
     fetch-registry: false # Don't search the own registry on eureka server
     service-url:  ## Configuring the credential on default-zone
-      default-zone: 'http://${ead.serviceRegistry.username}:${ead.serviceRegistry.password}@localhost:8761/eureka'
+      defaultZone: 'http://${ead.serviceRegistry.username}:${ead.serviceRegistry.password}@localhost:8761/eureka'

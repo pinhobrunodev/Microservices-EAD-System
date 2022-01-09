@@ -13,10 +13,16 @@ spring:
           default-label: master
           username: ${GITHUB_USER}
           password: ${GITHUB_PASS}
+
+ead:
+  serviceRegistry:
+    username: serviceregistry
+    password: 'ead123sr'
+
 eureka:
   client:
-    serviceUrl:
-      defaultZone: 'http://localhost:8761/eureka'
+    serviceUrl: # Connecting Config Server into Service Registry (now with Authentication)
+      defaultZone: 'http://${ead.serviceRegistry.username}:${ead.serviceRegistry.password}@localhost:8761/eureka'
   instance:
     hostname: localhost
 

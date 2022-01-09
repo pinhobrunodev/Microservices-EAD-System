@@ -47,9 +47,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .roles("ADMIN");
     }
 
-    @Override
-    protected AuthenticationManager authenticationManager() throws Exception {
-        return super.authenticationManager();
-    }
 
 }
