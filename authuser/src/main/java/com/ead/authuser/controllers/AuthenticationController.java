@@ -1,10 +1,13 @@
 package com.ead.authuser.controllers;
 
 import com.ead.authuser.dtos.UserDto;
+import com.ead.authuser.enums.RoleType;
 import com.ead.authuser.enums.UserStatus;
 import com.ead.authuser.enums.UserType;
+import com.ead.authuser.models.RoleModel;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.publishers.UserEventPublisher;
+import com.ead.authuser.services.impl.RoleServiceImpl;
 import com.ead.authuser.services.impl.UserServiceImpl;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.log4j.Log4j2;
@@ -12,6 +15,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +32,10 @@ public class AuthenticationController {
 
     @Autowired
     private UserServiceImpl userService;
+    @Autowired
+    private RoleServiceImpl roleService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping(value = "/signup")
     public ResponseEntity<Object> registerUser(@RequestBody
@@ -43,12 +52,15 @@ public class AuthenticationController {
             log.warn("Email {} is Already Taken! ",userDto.getEmail());
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Email is Already Taken!");
         }
+        RoleModel roleModel = roleService.findByRoleName(RoleType.ROLE_STUDENT).orElseThrow(()-> new RuntimeException("Error: Role is not found."));
+        userDto.setPassword(passwordEncoder.encode(userDto.getPassword())); // Converting Password with crypto
         var userModel = new UserModel();
         BeanUtils.copyProperties(userDto, userModel);
         userModel.setUserStatus(UserStatus.ACTIVE);
         userModel.setUserType(UserType.STUDENT);
         userModel.setCreationDate(LocalDateTime.now());
         userModel.setLastUpdateDate(LocalDateTime.now());
+        userModel.getRoles().add(roleModel); // saving the role on user
         userService.saveUserAndPublishEvent(userModel);
         log.debug("POST registerUser userModel saved {}",userModel.toString());
         log.info("User saved successfully userId {}",userModel.getUserId());

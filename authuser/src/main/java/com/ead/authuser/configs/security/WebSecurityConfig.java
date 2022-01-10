@@ -17,7 +17,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     // Endpoint that don't need authentication
     private static  final String [] AUTH_WHITELIST = {
-            "/ead-authuser/auth/**"
+            "/auth/**"
     };
 
     @Bean
@@ -42,7 +42,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication() // Setting the information to connect on Config Server
+        auth.inMemoryAuthentication()
                 .withUser("admin")
                 .password(passwordEncoder().encode("123456"))
                 .roles("ADMIN");
