@@ -1,5 +1,8 @@
 package com.ead.authuser.controllers;
 
+import com.ead.authuser.configs.security.JwtProvider;
+import com.ead.authuser.dtos.JwtDto;
+import com.ead.authuser.dtos.LoginDto;
 import com.ead.authuser.dtos.UserDto;
 import com.ead.authuser.enums.RoleType;
 import com.ead.authuser.enums.UserStatus;
@@ -15,11 +18,16 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
@@ -29,30 +37,33 @@ import java.time.ZoneId;
 @RequestMapping(value = "/auth")
 public class AuthenticationController {
 
-
+    @Autowired
+    private JwtProvider jwtProvider;
     @Autowired
     private UserServiceImpl userService;
     @Autowired
     private RoleServiceImpl roleService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @PostMapping(value = "/signup")
     public ResponseEntity<Object> registerUser(@RequestBody
                                                @Validated(UserDto.UserView.RegistrationPost.class)
                                                @JsonView(UserDto.UserView.RegistrationPost.class) UserDto userDto) {
-        log.debug("POST registerUser userDto received {}",userDto.toString());
+        log.debug("POST registerUser userDto received {}", userDto.toString());
 
         if (userService.existsByUsername(userDto.getUsername())) {
             // We can categorize logs for security ( Ex: User sent the same username in to many requests.. we need to send an Warn for the application )
-            log.warn("Username {} is Already Taken! ",userDto.getUsername());
+            log.warn("Username {} is Already Taken! ", userDto.getUsername());
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Username is Already Taken!");
         }
         if (userService.existsByEmail(userDto.getEmail())) {
-            log.warn("Email {} is Already Taken! ",userDto.getEmail());
+            log.warn("Email {} is Already Taken! ", userDto.getEmail());
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Email is Already Taken!");
         }
-        RoleModel roleModel = roleService.findByRoleName(RoleType.ROLE_STUDENT).orElseThrow(()-> new RuntimeException("Error: Role is not found."));
+        RoleModel roleModel = roleService.findByRoleName(RoleType.ROLE_STUDENT).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword())); // Converting Password with crypto
         var userModel = new UserModel();
         BeanUtils.copyProperties(userDto, userModel);
@@ -62,13 +73,24 @@ public class AuthenticationController {
         userModel.setLastUpdateDate(LocalDateTime.now());
         userModel.getRoles().add(roleModel); // saving the role on user
         userService.saveUserAndPublishEvent(userModel);
-        log.debug("POST registerUser userModel saved {}",userModel.toString());
-        log.info("User saved successfully userId {}",userModel.getUserId());
+        log.debug("POST registerUser userModel saved {}", userModel.toString());
+        log.info("User saved successfully userId {}", userModel.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED).body(userModel);
     }
 
+    @PostMapping(value = "/login")
+    public ResponseEntity<JwtDto> authenticateUser(@Valid @RequestBody LoginDto loginDto) {
+        Authentication authentication = authenticationManager.authenticate( // Used to make the authentication -> UserDetails...Query...etc.. and return a object authenticated
+                new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication); // Setting the authentication on the Security Context of application with the object authenticated
+        String jwt = jwtProvider.generateJwt(authentication); // Generating the JWT token of the object authenticated
+        return ResponseEntity.ok(new JwtDto(jwt));
+
+    }
+
+
     @GetMapping("/")
-    public String index(){
+    public String index() {
         log.trace("TRACE"); // -> Used to visualize with more  details
         log.debug("DEBUG"); // -> Used to development environment when people are developing.... Ex : Values of some variable....
         log.info("INFO"); // -> Used to visualize important infos not so detailed like the "trace"... Very common on Production....Only RELEVANT information
