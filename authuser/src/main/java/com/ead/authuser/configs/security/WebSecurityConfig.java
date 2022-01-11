@@ -10,8 +10,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity // -> Turn off wall security config default
 @Configuration
@@ -37,23 +39,33 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        http
-                .httpBasic()
-                .authenticationEntryPoint(authenticationEntryPoint) // If have some error during authentication will throw exception to UNAUTHORIZED.
+        http    // If I have some error during authentication will throw exception to UNAUTHORIZED.
+                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
+                .and()
+                // Session = NO STATE ....  Always when throw  a request need to have the token to be validated
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
                 .antMatchers(AUTH_WHITELIST).permitAll() // Free the Endpoint ( don't need authentication )
-                .antMatchers(HttpMethod.GET,"/users/**").hasAnyRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .csrf().disable();
-
+        // Enabling the Filter and the Spring Security will consider the Filter that we build to validate the tokens that are coming with the requisitions to access the resources
+        http.addFilterBefore(authenticationJwtFilter(), UsernamePasswordAuthenticationFilter.class);
+        // After this..  the requests -> specific controllers
     }
 
 
-    @Override  // The way that authenticationManager will authenticate... userDetailsService return an Obj with UserDetails that have the attributes to authentication.
+    @Override
+    // The way that authenticationManager will authenticate... userDetailsService return an Obj with UserDetails that have the attributes to authentication.
     protected void configure(AuthenticationManagerBuilder auth) throws Exception { // The way that will see the password = passwordEncode
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+    }
+
+
+    @Bean // -> Allows the consideration of AuthenticationJwTFilter
+    public AuthenticationJwtFilter authenticationJwtFilter() {
+        return new AuthenticationJwtFilter();
     }
 
 
