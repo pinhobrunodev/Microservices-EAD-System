@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -34,6 +35,7 @@ public class LessonController {
     @Autowired
     private ModuleServiceImpl moduleService;
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PostMapping
     public ResponseEntity<Object> saveLesson(@PathVariable UUID moduleId, @Valid @RequestBody LessonDto lessonDto) {
         Optional<ModuleModel> moduleModelOptional = moduleService.findById(moduleId);
@@ -46,7 +48,7 @@ public class LessonController {
         lessonModel.setModule(moduleModelOptional.get());
         return ResponseEntity.status(HttpStatus.CREATED).body(lessonService.save(lessonModel));
     }
-
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @DeleteMapping(value = "/{lessonId}")
     public ResponseEntity<Object> deleteLesson(@PathVariable UUID moduleId, @PathVariable UUID lessonId) {
         Optional<LessonModel> lessonModelOptional = lessonService.findLessonIntoModule(moduleId, lessonId);
@@ -57,7 +59,7 @@ public class LessonController {
         return ResponseEntity.status(HttpStatus.OK).body("Lesson deleted successfully.");
 
     }
-
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PutMapping(value = "/{lessonId}")
     public ResponseEntity<Object> updateLesson(@PathVariable UUID moduleId,@PathVariable UUID lessonId, @Valid @RequestBody LessonDto lessonDto) {
         Optional<LessonModel> lessonModelOptional = lessonService.findLessonIntoModule(moduleId, lessonId);
@@ -70,7 +72,7 @@ public class LessonController {
         lessonModel.setVideoUrl(lessonDto.getVideoUrl());
         return ResponseEntity.status(HttpStatus.OK).body(lessonService.save(lessonModel));
     }
-
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping
     public ResponseEntity<Page<LessonModel>> getAllLessons(
               SpecificationTemplate.LessonSpec spec,
@@ -78,7 +80,7 @@ public class LessonController {
               @PathVariable UUID moduleId) {
         return ResponseEntity.ok().body(lessonService.findAllByModule(SpecificationTemplate.lessonModuleId(moduleId).and(spec),pageable));
     }
-
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping(value = "/{lessonId}")
     public ResponseEntity<Object> getOneLesson(@PathVariable UUID moduleId, @PathVariable UUID lessonId) {
         Optional<LessonModel> lessonModelOptional = lessonService.findLessonIntoModule(moduleId, lessonId);

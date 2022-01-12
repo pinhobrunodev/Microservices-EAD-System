@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -33,6 +34,7 @@ public class ModuleController {
     @Autowired
     private CourseServiceImpl courseService;
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PostMapping
     public ResponseEntity<Object> saveModule(@PathVariable UUID courseId, @Valid @RequestBody ModuleDto moduleDto) {
         Optional<CourseModel> course = courseService.findById(courseId);
@@ -45,7 +47,7 @@ public class ModuleController {
         moduleModel.setCourse(course.get());
         return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.save(moduleModel));
     }
-
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @DeleteMapping(value = "/{moduleId}")
     public ResponseEntity<Object> deleteCourse(@PathVariable UUID moduleId, @PathVariable UUID courseId) {
         Optional<ModuleModel> moduleModel = moduleService.findModuleIntoCourse(courseId, moduleId);
@@ -56,7 +58,7 @@ public class ModuleController {
         return ResponseEntity.status(HttpStatus.OK).body("Module deleted successfully.");
 
     }
-
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PutMapping(value = "/{moduleId}")
     public ResponseEntity<Object> updateModule(@PathVariable UUID moduleId, @PathVariable UUID courseId, @Valid @RequestBody ModuleDto moduleDto) {
         Optional<ModuleModel> moduleModelOptional = moduleService.findModuleIntoCourse(courseId, moduleId);
@@ -69,7 +71,7 @@ public class ModuleController {
         return ResponseEntity.status(HttpStatus.OK).body(moduleService.save(moduleModel));
     }
 
-
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping
     public ResponseEntity<Page<ModuleModel>> getAllModules(
             SpecificationTemplate.ModuleSpec spec,
@@ -77,7 +79,7 @@ public class ModuleController {
             @PathVariable UUID courseId) {
         return ResponseEntity.ok().body(moduleService.findAllByCourse(SpecificationTemplate.moduleCourseId(courseId).and(spec), pageable));
     }
-
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping(value = "/{moduleId}")
     public ResponseEntity<Object> getOneModule(@PathVariable UUID moduleId, @PathVariable UUID courseId) {
         Optional<ModuleModel> moduleModelOptional = moduleService.findModuleIntoCourse(courseId, moduleId);

@@ -44,7 +44,6 @@ public class CourseUserController {
         return ResponseEntity.ok().body(userModelService.findAll(SpecificationTemplate.userCourseId(courseId).and(spec), pageable));
     }
 
-    // If AuthUser is not working... The Course-MS will continue doing the subscription. Because have a table_users
     @PostMapping(value = "/courses/{courseId}/users/subscription")
     public ResponseEntity<Object> saveSubscriptionUserInCourse(@PathVariable UUID courseId, @RequestBody @Valid SubscriptionDto dto) {
         Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
