@@ -9,6 +9,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -19,26 +21,30 @@ import java.util.UUID;
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class UserNotificationController {
 
+
     final NotificationModelService notificationModelService;
 
     public UserNotificationController(NotificationModelService notificationModelService) {
         this.notificationModelService = notificationModelService;
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping(value = "/users/{userId}/notifications")
     public ResponseEntity<Page<NotificationModel>> getAllNotificationsByUser(@PathVariable UUID userId,
                                                                              @PageableDefault(page = 0, size = 10, sort = "notificationId", direction = Sort.Direction.ASC)
-                                                                                     Pageable pageable) {
-    return ResponseEntity.ok().body(notificationModelService.findAllNotificationByUser(userId,pageable));
+                                                                                     Pageable pageable,
+                                                                             Authentication authentication) {
+        return ResponseEntity.ok().body(notificationModelService.findAllNotificationByUser(userId, pageable));
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @PutMapping(value = "/users/{userId}/notifications/{notificationId}")
     public ResponseEntity<Object> updateNotification(@PathVariable UUID userId,
                                                      @PathVariable UUID notificationId,
-                                                     @RequestBody @Valid NotificationDto notificationDto){
-        Optional<NotificationModel> notificationModelOptional = notificationModelService.findByNotificationIdAndUserId(notificationId,userId);
-        if(notificationModelOptional.isEmpty()){
-            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("Notification not found!");
+                                                     @RequestBody @Valid NotificationDto notificationDto) {
+        Optional<NotificationModel> notificationModelOptional = notificationModelService.findByNotificationIdAndUserId(notificationId, userId);
+        if (notificationModelOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Notification not found!");
         }
         notificationModelOptional.get().setNotificationStatus(notificationDto.getNotificationStatus());
         notificationModelService.saveNotification(notificationModelOptional.get());
