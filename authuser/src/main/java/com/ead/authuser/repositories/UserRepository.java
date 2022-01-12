@@ -18,4 +18,6 @@ public interface UserRepository extends JpaRepository<UserModel, UUID>, JpaSpeci
     boolean existsByEmail(String email);
     @EntityGraph(attributePaths = "roles",type = EntityGraph.EntityGraphType.FETCH) // In a specific method I need a EAGER query.(roles = UserModel Relation  to RoleModel)
     Optional<UserModel> findByUsername(String username); // Bring the User with  Roles !!
+    @EntityGraph(attributePaths = "roles",type = EntityGraph.EntityGraphType.FETCH)
+    Optional<UserModel> findById(UUID userId);
 }

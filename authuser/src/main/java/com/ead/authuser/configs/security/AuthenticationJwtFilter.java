@@ -15,6 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
 
 // Intercept the request and verify if everything is ok... (jwt provides methods)
 @Log4j2
@@ -25,14 +26,14 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {        // On
     private UserDetailsServiceImpl userDetailsService;
 
 
-    // GET the token -> Extract the username -> LoadUserByUsername ->  Set that information on Authentication -> Authenticate the user request
+    // GET the token -> Extract the userId -> loadUserByUserId ->  Set that information on Authentication -> Authenticate the user request
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             String jwtStr = getTokenHeader(request); // Get the token of the request that is inside the header of requisition
             if (jwtStr != null && jwtProvider.validateJwt(jwtStr)) {
-                String username = jwtProvider.getUsername(jwtStr);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                String userId = jwtProvider.getSubjectJwt(jwtStr);
+                UserDetails userDetails = userDetailsService.loadUserByUserId(UUID.fromString(userId));
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);

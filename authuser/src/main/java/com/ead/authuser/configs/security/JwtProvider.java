@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Component
@@ -23,17 +24,24 @@ public class JwtProvider {
     // Method to generate the token
     public String generateJwt(Authentication authentication) {
         // Extract the UserDetails of the Authentication
-        UserDetails userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+        // roles  => Receive the value ON String of all authorities on the user authenticated
+        final String roles = userPrincipal.getAuthorities().stream().map(
+                role -> {
+                    return role.getAuthority();
+                }
+        ).collect(Collectors.joining(","));
         return Jwts.builder() // Build the token with the UserDetails information that were extracted by the authentication.
-                .setSubject((userPrincipal.getUsername()))
+                .setSubject((userPrincipal.getUserId()).toString()) // Create token with UUID -> IMPORTANT TO OTHER MICROSERVICES VALIDATE TOKEN
+                .claim("roles",roles) // Insert claims on our token (roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 
-    // Receive the token that was generated and catch the  username of the user that are on the token.
-    public String getUsername(String token) {
+    // Receive the token that was generated and catch the  userID of the user that are on the token.
+    public String getSubjectJwt(String token) {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
     }
 
