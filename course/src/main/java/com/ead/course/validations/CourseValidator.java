@@ -1,11 +1,14 @@
 package com.ead.course.validations;
 
+import com.ead.course.configs.security.AuthenticationCurrentUserService;
+import com.ead.course.configs.security.UserDetailsImpl;
 import com.ead.course.dtos.CourseDto;
 import com.ead.course.enums.UserType;
 import com.ead.course.models.UserModel;
 import com.ead.course.repositories.UserModelRepository;
 import com.ead.course.services.UserModelService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -20,6 +23,8 @@ public class CourseValidator implements Validator {
     private Validator validator;
     @Autowired
     private UserModelService userModelService;
+    @Autowired
+    private AuthenticationCurrentUserService authenticationCurrentUserService;
 
 
     @Override
@@ -40,12 +45,19 @@ public class CourseValidator implements Validator {
 
     // Validating when insert Course.
     private void validateUserInstructor(UUID userInstructor, Errors errors) {
-        Optional<UserModel> userModelOptional = userModelService.findById(userInstructor);
-        if (userModelOptional.isEmpty()) {
-            errors.rejectValue("userInstructor", "UserInstructorError", "Instructor not found.");
+        UUID currentUserId = authenticationCurrentUserService.getCurrentUser().getUserId();
+        if (currentUserId.equals(userInstructor)) {
+            Optional<UserModel> userModelOptional = userModelService.findById(userInstructor);
+            if (userModelOptional.isEmpty()) {
+                errors.rejectValue("userInstructor", "UserInstructorError", "Instructor not found.");
+            }
+            if (userModelOptional.get().getUserType().equals(UserType.STUDENT.toString())) {
+                errors.rejectValue("userInstructor", "UserInstructorError", "User must be INSTRUCTOR or ADMIN!");
+            }
         }
-        if (userModelOptional.get().getUserType().equals(UserType.STUDENT.toString())) {
-            errors.rejectValue("userInstructor", "UserInstructorError", "User must be INSTRUCTOR or ADMIN!");
+        else {
+            throw  new AccessDeniedException("Forbidden");
         }
+
     }
 }
