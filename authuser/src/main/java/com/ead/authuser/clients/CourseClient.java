@@ -12,6 +12,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -43,21 +45,20 @@ public class CourseClient {
     //  Don't make sense send an empty pagination ... Client will think that he don't have any subscription in a course
     @CircuitBreaker(name = "circuitbreakerInstance")
     // fallback -> send to an Error QUEUE to another MS listen and treat
-    public Page<CourseDto> getAllCoursesByUser(UUID userId, Pageable pageable) {
+    public Page<CourseDto> getAllCoursesByUser(UUID userId, Pageable pageable, String token) {
         List<CourseDto> searchResult = null;
         url = REQUEST_URL_COURSE + utilsService.createUrlGetAllCoursesByUser(userId, pageable);
+        HttpHeaders httpHeaders = new HttpHeaders(); // Create the instance of the Header
+        httpHeaders.set("Authorization", token); // Setting the token on parameter 'Authorization' that came from the request.
+        HttpEntity<String> requestEntity = new HttpEntity<String>("parameters", httpHeaders); // Creating the RequestEntity with the token on Authorization parameter
         log.debug("Request URL : {}", url);
         log.info("Request URL : {}", url);
-        try {
-            // Allows the Pagination from ResponsePageDto OF CourseDto
-            ParameterizedTypeReference<ResponsePageDto<CourseDto>> responseType = new ParameterizedTypeReference<ResponsePageDto<CourseDto>>() {
-            };
-            ResponseEntity<ResponsePageDto<CourseDto>> result = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
-            searchResult = result.getBody().getContent();
-            log.debug("Response Number of Elements : {}", searchResult.size());
-        } catch (HttpStatusCodeException e) {
-            log.error("Error request /courses {}", e);
-        }
+        // Allows the Pagination from ResponsePageDto OF CourseDto
+        ParameterizedTypeReference<ResponsePageDto<CourseDto>> responseType = new ParameterizedTypeReference<ResponsePageDto<CourseDto>>() {
+        };                                                                                              // Now  we are throwing a header with the authorization that came on the request
+        ResponseEntity<ResponsePageDto<CourseDto>> result = restTemplate.exchange(url, HttpMethod.GET, requestEntity, responseType);
+        searchResult = result.getBody().getContent();
+        log.debug("Response Number of Elements : {}", searchResult.size());
         log.info("Ending request /courses userId {} ", userId);
         return new PageImpl<>(searchResult);
     }

@@ -10,10 +10,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -30,14 +28,15 @@ public class UserCourseController {
 
 
     // CourseDto because is the courses that we need
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping(value = "/users/{userId}/courses")
     public ResponseEntity<Object> getAllCoursesByUser(@PageableDefault(page = 0, size = 10, sort = "courseId",
             direction = Sort.Direction.ASC) Pageable pageable
-            , @PathVariable UUID userId) {
+            , @PathVariable UUID userId, @RequestHeader("Authorization") String token) { // Get the token from the Request
         Optional<UserModel> userModelOptional = userService.findById(userId);
         if (userModelOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
-        return ResponseEntity.ok().body(courseClient.getAllCoursesByUser(userId, pageable));
+        return ResponseEntity.ok().body(courseClient.getAllCoursesByUser(userId, pageable,token));
     }
 }
